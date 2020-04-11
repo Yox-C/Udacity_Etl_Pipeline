@@ -26,7 +26,7 @@ def tokenize(text):
     return clean_tokens
 
 # load data
-engine = create_engine('sqlite:///../data/messages.db')
+engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('DisasterResponse', engine)
 
 # load model
@@ -42,20 +42,43 @@ def index():
     # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
+    catg==df[df.columns[5:]]
+    catg_counts=catg.mean()*catg.shape[0]
+    catg_names=list(catg_counts.index)
+    nlarge_counts = catg_counts.nlargest(5)
+    nlarge_names = list(nlarge_counts.index)
     
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
     graphs = [
         {
             'data': [
-                Pie(
-                    labels=genre_names,
-                    values=genre_counts
+                Bar(
+                    x=genre_names,
+                    y=genre_counts
                 )
             ],
 
             'layout': {
-                'title': 'Distribution of Message Categories',
+                'title': 'Distribution of Message Genres',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Genre"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=nlarge_names,
+                    y=nlarge_counts
+                )
+            ],
+
+            'layout': {
+                'title': 'Top Message Categories',
                 'yaxis': {
                     'title': "Count"
                 },
@@ -63,26 +86,15 @@ def index():
                     'title': "Category"
                 }
             }
-        },
-        {
-            'data': [
-                Bar(
-                    x=cat_labels,
-                    y=cat_counts
-                )
-            ],
-
-            'layout': {
-                'title': 'Distribution of Messages',
-                'yaxis': {
-                    'title': "Count"
-                },
-                'xaxis': {
-                    'title': ""
-                }
-            }
-        },
+        }
     ]
+    
+    # encode plotly graphs in JSON
+    ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
+    graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
+    
+    # render web page with plotly graphs
+    return render_template('master.html', ids=ids, graphJSON=graphJSON)
     
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
