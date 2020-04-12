@@ -53,7 +53,7 @@ def clean_data(df):
     df.related.replace(2,1,inplace=True)
     
     # drop duplicates
-    df.drop_duplicates(inplace=True)c
+    df.drop_duplicates(inplace=True)
 
     return df
 
